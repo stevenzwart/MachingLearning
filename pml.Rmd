@@ -1,0 +1,44 @@
+---
+title: "pml2.rmd"
+author: "Steven Zwart"
+date: "Saturday, November 22, 2014"
+output: html_document
+---
+This document describes the practical machine learning implementation project, the data used is of volunteers who measured various body functions while doing exercises in different ways. 
+
+Training data used can be found here :
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+
+After loading the training data in R, I noticed that a there were a lot of elements with a value of "DIV/0!". These values are not interpreted as NA by r, so I changed this value into NA using the vi editor. After loading again, I removed all columns that have almost exclusively NA as value.
+
+First I created a training set of 60 percent of the data, and a cross validation set of the remaining 40. Here is the code in R: 
+
+# split the data set in a training and a cross validation set : 60/40 will be the ratio
+inTrainPml = createDataPartition(pml$classe, p=0.6)[[1]]
+trainPml = pml[inTrainPml,]
+cvPml = pml[-inTrainPml,]
+
+Initials analysis showed that many columns hold almost exclusively NA, these are not useful, to remove them I created the following r snippet:
+
+ex_vec <- c(1,2,3,4,5,6,7)
+for (i in 8:159) {
+  if (sum(is.na(trainPml[i]))>3000) {
+    ex_vec <- c(ex_vec, i)
+  }
+}
+
+And with these commands I removed the values from training and cross validation set:
+
+train1 <- trainPml[-ex_vec]
+cv1 <- cvPml[-ex_vec]
+
+I tried first the rpart (tree) to fit a model, this yielded awful results: classe "D" wasn't even a possible output, while in reality this was about 20 percent of the output.
+
+modFit <- train(classe~., method="rpart", data=train1)
+
+Random forests however yielded a much better result
+
+modFit <- train(classe~., method="rf", data=train1)
+
+And these are the predictions of the 20 test records:
+B A B A A E D B A A B C B A E E A B B B
