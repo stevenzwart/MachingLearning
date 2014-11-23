@@ -13,49 +13,59 @@ After loading the training data in R, I noticed that a there were a lot of eleme
 
 First I created a training set of 60 percent of the data, and a cross validation set of the remaining 40. Here is the code in R: 
 
-split the data set in a training and a cross validation set : 60/40 will be the ratio
+```{r}
 inTrainPml = createDataPartition(pml$classe, p=0.6)[[1]]
 trainPml = pml[inTrainPml,]
 cvPml = pml[-inTrainPml,]
+```
 
 Initials analysis showed that many columns hold almost exclusively NA, these are not useful, to remove them I created the following r snippet:
 
+```{r}
 ex_vec <- c(1,2,3,4,5,6,7)
 for (i in 8:159) {
   if (sum(is.na(trainPml[i]))>3000) {
     ex_vec <- c(ex_vec, i)
   }
 }
+```
 
 And with these commands I removed the values from training and cross validation set:
 
+```{r}
 train1 <- trainPml[-ex_vec]
 cv1 <- cvPml[-ex_vec]
+```
 
 Some plots I created on the training set showed that the relations were not at all linear, it was hard to discover what the actual relation might be. I have included 2 examples of these plots (plot1.png and plot2.png)
 
 I tried first the rpart (tree) to fit a model, this yielded awful results: classe "D" wasn't even a possible output, while in reality this was about 20 percent of the output.
 
+```{r}
 modFit <- train(classe~., method="rpart", data=train1)
+```
 
 Random forests however yielded a much better result
 
+```{r}
 modFit <- train(classe~., method="rf", data=train1)
+```
 
 This is the confusion matrix for the cross validation set, as can be seen it is highly accurate (99.25 percent)
 
-confusionMatrix (predict(modFit, train1), train1$classe)
 
+```{r}
+confusionMatrix (predict(modFit, train1), train1$classe)
+```
          Reference
+
 Prediction    A    B    C    D    E
          A 2227    8    0    0    0
          B    3 1505   11    0    0
          C    2    5 1354   15    3
          D    0    0    2 1268    6
          E    0    0    1    3 1433
-```{r}
-confusionMatrix (predict(modFit, train1), train1$classe)
-```
+
 
 Overall Statistics
                                           
@@ -68,6 +78,8 @@ This gives good confidence that the results will be good for the test set, I wou
 
 These are the predictions of the 20 test records, the file with the test cases has been loaded in the same way as the file with the training data, so "DIV0" rows have been changed to NA, and the same columns as in the training set have been removed.
 
+```{r}
 predict(modFit, test1)
+```
 
 B A B A A E D B A A B C B A E E A B B B
