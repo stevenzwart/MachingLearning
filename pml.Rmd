@@ -89,6 +89,6 @@ These are the predictions of the 20 test records, the file with the test cases h
 predict(modFit, test1)
 ```
 
-B A B A A E D B A A B C B A E E A B B B
+
 
 
