@@ -1,7 +1,7 @@
 ---
 title: "pml2.rmd"
 author: "Steven Zwart"
-date: "Saturday, November 22, 2014"
+date: "Tuesday, October 20, 2015"
 output: html_document
 ---
 This document describes the practical machine learning implementation project, the data used is of volunteers who measured various body functions while doing exercises in different ways. 
